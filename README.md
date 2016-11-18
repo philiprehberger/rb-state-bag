@@ -27,7 +27,7 @@ gem install philiprehberger-state_bag
 ## Usage
 
 ```ruby
-require 'philiprehberger/state_bag'
+require "philiprehberger/state_bag"
 
 Philiprehberger::StateBag.set(:user_id, 42)
 Philiprehberger::StateBag.get(:user_id)
