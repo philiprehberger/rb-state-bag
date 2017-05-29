@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/rb-state-bag/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-state-bag/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-state_bag.svg)](https://rubygems.org/gems/philiprehberger-state_bag)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-state-bag)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Thread-local state bag for implicit context propagation
 
@@ -85,4 +86,4 @@ bundle exec rubocop
 
 ## License
 
-MIT
+[MIT](LICENSE)
