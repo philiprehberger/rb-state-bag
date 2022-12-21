@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Thread-local state bag for implicit context propagation'
   spec.description = 'Thread-local key-value state bag with scoped overrides via blocks, ' \
-                       'automatic restoration, and thread isolation for implicit context propagation.'
+                     'automatic restoration, and thread isolation for implicit context propagation.'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-state_bag'
   spec.license = 'MIT'
 
