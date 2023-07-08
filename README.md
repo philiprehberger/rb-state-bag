@@ -55,6 +55,20 @@ Philiprehberger::StateBag.get(:locale)
 # => "en"
 ```
 
+### Fetch and Delete
+
+```ruby
+require "philiprehberger/state_bag"
+
+Philiprehberger::StateBag.set(:user, "Alice")
+Philiprehberger::StateBag.fetch(:user)             # => "Alice"
+Philiprehberger::StateBag.fetch(:missing, "default") # => "default"
+Philiprehberger::StateBag.fetch(:missing) { |k| "no #{k}" } # => "no missing"
+
+Philiprehberger::StateBag.delete(:user)  # => "Alice"
+Philiprehberger::StateBag.key?(:user)    # => false
+```
+
 ### Inspection
 
 ```ruby
@@ -71,6 +85,8 @@ Philiprehberger::StateBag.clear
 | `.set(key, val)` | Store a value in the thread-local state bag |
 | `.get(key, default = nil)` | Retrieve a value or return the default |
 | `.with(**overrides, &block)` | Execute block with temporary state, restoring after |
+| `.fetch(key, default = UNSET, &block)` | Retrieve a value; raises KeyError if missing with no default/block |
+| `.delete(key)` | Remove a key and return its value |
 | `.clear` | Remove all entries from the state bag |
 | `.to_h` | Return a snapshot of the current state |
 | `.key?(key)` | Check if a key exists in the state bag |

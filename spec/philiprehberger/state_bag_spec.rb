@@ -211,6 +211,47 @@ RSpec.describe Philiprehberger::StateBag do
     end
   end
 
+  describe '.fetch' do
+    before { described_class.set(:name, 'Alice') }
+
+    it 'returns value for existing key' do
+      expect(described_class.fetch(:name)).to eq('Alice')
+    end
+
+    it 'returns default for missing key' do
+      expect(described_class.fetch(:missing, 'fallback')).to eq('fallback')
+    end
+
+    it 'calls block for missing key' do
+      expect(described_class.fetch(:missing) { |k| "no #{k}" }).to eq('no missing')
+    end
+
+    it 'raises KeyError when key missing and no default or block' do
+      expect { described_class.fetch(:missing) }.to raise_error(KeyError)
+    end
+
+    it 'returns nil when value is nil' do
+      described_class.set(:empty, nil)
+      expect(described_class.fetch(:empty)).to be_nil
+    end
+
+    it 'prefers block over default' do
+      expect(described_class.fetch(:missing) { 'block' }).to eq('block')
+    end
+  end
+
+  describe '.delete' do
+    it 'removes a key and returns its value' do
+      described_class.set(:temp, 'data')
+      expect(described_class.delete(:temp)).to eq('data')
+      expect(described_class.key?(:temp)).to be false
+    end
+
+    it 'returns nil for missing key' do
+      expect(described_class.delete(:nonexistent)).to be_nil
+    end
+  end
+
   describe 'thread isolation' do
     it 'does not leak state between threads' do
       described_class.set(:main, true)

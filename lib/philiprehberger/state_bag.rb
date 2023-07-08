@@ -6,6 +6,9 @@ module Philiprehberger
   module StateBag
     class Error < StandardError; end
 
+    UNSET = Object.new.freeze
+    private_constant :UNSET
+
     # Set a value in the thread-local state bag
     #
     # @param key [Symbol, String] the key to set
@@ -60,6 +63,33 @@ module Philiprehberger
     # @return [Hash] copy of the current state
     def self.to_h
       store.dup
+    end
+
+    # Fetch a value from the state bag with strict key checking
+    #
+    # @param key [Symbol, String] the key to retrieve
+    # @param default [Object] optional default if key is not found
+    # @yield [key] optional block called when key is not found
+    # @return [Object] the stored value, default, or block result
+    # @raise [KeyError] if key not found and no default or block given
+    def self.fetch(key, default = UNSET, &block)
+      if store.key?(key)
+        store[key]
+      elsif block
+        block.call(key)
+      elsif default != UNSET
+        default
+      else
+        raise KeyError, "key not found: #{key.inspect}"
+      end
+    end
+
+    # Remove a key from the state bag
+    #
+    # @param key [Symbol, String] the key to remove
+    # @return [Object] the removed value or nil
+    def self.delete(key)
+      store.delete(key)
     end
 
     # Check if a key exists in the state bag
