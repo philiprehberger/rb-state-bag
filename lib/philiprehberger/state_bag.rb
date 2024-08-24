@@ -100,6 +100,27 @@ module Philiprehberger
       store.key?(key)
     end
 
+    # Return the number of entries in the state bag.
+    #
+    # @return [Integer]
+    def self.size
+      store.size
+    end
+
+    # Check whether the state bag is empty.
+    #
+    # @return [Boolean]
+    def self.empty?
+      store.empty?
+    end
+
+    # Return all keys in the state bag.
+    #
+    # @return [Array]
+    def self.keys
+      store.keys
+    end
+
     class << self
       private
 

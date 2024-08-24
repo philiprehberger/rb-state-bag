@@ -276,4 +276,20 @@ RSpec.describe Philiprehberger::StateBag do
       expect(described_class.key?(:other_thread)).to be false
     end
   end
+
+  describe '.size, .empty?, .keys' do
+    it 'reports 0 and empty for a fresh bag' do
+      expect(described_class.size).to eq(0)
+      expect(described_class.empty?).to be true
+      expect(described_class.keys).to eq([])
+    end
+
+    it 'reports size after sets' do
+      described_class.set(:a, 1)
+      described_class.set(:b, 2)
+      expect(described_class.size).to eq(2)
+      expect(described_class.empty?).to be false
+      expect(described_class.keys).to contain_exactly(:a, :b)
+    end
+  end
 end
