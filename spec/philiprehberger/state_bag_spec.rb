@@ -292,4 +292,30 @@ RSpec.describe Philiprehberger::StateBag do
       expect(described_class.keys).to contain_exactly(:a, :b)
     end
   end
+
+  describe '.values' do
+    it 'returns all values after multiple sets' do
+      described_class.set(:a, 1)
+      described_class.set(:b, 2)
+      described_class.set(:c, 3)
+      expect(described_class.values).to contain_exactly(1, 2, 3)
+    end
+
+    it 'returns an empty array when the bag is empty' do
+      expect(described_class.values).to eq([])
+    end
+
+    it 'is isolated across threads (other thread sees empty values)' do
+      described_class.set(:main, 'main-val')
+      thread_values = Thread.new { described_class.values }.value
+      expect(thread_values).to eq([])
+    end
+
+    it 'reflects current state after delete' do
+      described_class.set(:a, 1)
+      described_class.set(:b, 2)
+      described_class.delete(:a)
+      expect(described_class.values).to contain_exactly(2)
+    end
+  end
 end
