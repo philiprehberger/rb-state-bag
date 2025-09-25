@@ -128,6 +128,43 @@ module Philiprehberger
       store.values
     end
 
+    # Bulk-set multiple entries in the state bag
+    #
+    # @param entries [Hash] key-value pairs to write
+    # @return [Hash] snapshot of the state bag after the merge
+    def self.merge(**entries)
+      entries.each { |k, v| store[k] = v }
+      store.dup
+    end
+
+    # Replace the entire state bag with the given hash
+    #
+    # @param hash [Hash] the new state
+    # @return [Hash] snapshot of the state bag after the replacement
+    def self.replace(hash)
+      store.replace(hash.dup)
+      store.dup
+    end
+
+    # Return a subset of the state bag containing only the given keys
+    #
+    # @param keys [Array] keys to extract
+    # @return [Hash] subset of the state (keys not present are omitted)
+    def self.slice(*keys)
+      store.slice(*keys)
+    end
+
+    # Iterate over key-value pairs in the state bag
+    #
+    # @yield [key, value] each key-value pair
+    # @return [Enumerator] when no block is given
+    # @return [Hash] the state bag snapshot when a block is given
+    def self.each(&block)
+      return store.dup.each_pair unless block
+
+      store.dup.each_pair(&block)
+    end
+
     class << self
       private
 
