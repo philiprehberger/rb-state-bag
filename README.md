@@ -15,7 +15,7 @@ Thread-local state bag for implicit context propagation
 Add to your Gemfile:
 
 ```ruby
-gem 'philiprehberger-state_bag'
+gem "philiprehberger-state_bag"
 ```
 
 Or install directly:
