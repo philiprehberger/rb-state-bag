@@ -77,6 +77,7 @@ Philiprehberger::StateBag.key?(:a)   # => true
 Philiprehberger::StateBag.size       # => 1
 Philiprehberger::StateBag.empty?     # => false
 Philiprehberger::StateBag.keys       # => [:a]
+Philiprehberger::StateBag.values     # => [1]
 Philiprehberger::StateBag.to_h       # => {:a=>1}
 Philiprehberger::StateBag.clear
 ```
@@ -96,6 +97,7 @@ Philiprehberger::StateBag.clear
 | `.size` | Number of entries in the state bag |
 | `.empty?` | True if the state bag has no entries |
 | `.keys` | Array of all keys in the state bag |
+| `.values` | Array of all values in the state bag |
 
 ## Development
 

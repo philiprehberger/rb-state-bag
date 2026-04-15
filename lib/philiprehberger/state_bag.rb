@@ -121,6 +121,13 @@ module Philiprehberger
       store.keys
     end
 
+    # Return all values in the state bag.
+    #
+    # @return [Array]
+    def self.values
+      store.values
+    end
+
     class << self
       private
 
