@@ -74,6 +74,9 @@ Philiprehberger::StateBag.key?(:user)    # => false
 ```ruby
 Philiprehberger::StateBag.set(:a, 1)
 Philiprehberger::StateBag.key?(:a)   # => true
+Philiprehberger::StateBag.size       # => 1
+Philiprehberger::StateBag.empty?     # => false
+Philiprehberger::StateBag.keys       # => [:a]
 Philiprehberger::StateBag.to_h       # => {:a=>1}
 Philiprehberger::StateBag.clear
 ```
@@ -90,6 +93,9 @@ Philiprehberger::StateBag.clear
 | `.clear` | Remove all entries from the state bag |
 | `.to_h` | Return a snapshot of the current state |
 | `.key?(key)` | Check if a key exists in the state bag |
+| `.size` | Number of entries in the state bag |
+| `.empty?` | True if the state bag has no entries |
+| `.keys` | Array of all keys in the state bag |
 
 ## Development
 
