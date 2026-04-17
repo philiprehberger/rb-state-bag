@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-17
+
+### Added
+- `StateBag.merge(**entries)` for bulk-setting multiple keys at once
+- `StateBag.replace(hash)` for atomically replacing the entire state
+- `StateBag.slice(*keys)` for extracting a hash of selected keys
+- `StateBag.each(&block)` for iterating key-value pairs (returns an Enumerator without a block)
+
+### Changed
+- Issue templates now include Ruby code placeholders for reproduction and proposed-API fields
+
 ## [0.4.0] - 2026-04-15
 
 ### Added

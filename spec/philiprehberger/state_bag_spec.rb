@@ -318,4 +318,125 @@ RSpec.describe Philiprehberger::StateBag do
       expect(described_class.values).to contain_exactly(2)
     end
   end
+
+  describe '.merge' do
+    it 'sets multiple keys at once' do
+      described_class.merge(a: 1, b: 2, c: 3)
+      expect(described_class.to_h).to eq(a: 1, b: 2, c: 3)
+    end
+
+    it 'overwrites existing keys' do
+      described_class.set(:a, 'old')
+      described_class.merge(a: 'new', b: 'added')
+      expect(described_class.get(:a)).to eq('new')
+      expect(described_class.get(:b)).to eq('added')
+    end
+
+    it 'preserves keys not mentioned in the merge' do
+      described_class.set(:keep, 'here')
+      described_class.merge(other: 'added')
+      expect(described_class.get(:keep)).to eq('here')
+    end
+
+    it 'returns a snapshot of the state after merging' do
+      described_class.set(:existing, 1)
+      snapshot = described_class.merge(new_key: 2)
+      expect(snapshot).to eq(existing: 1, new_key: 2)
+    end
+
+    it 'is a no-op when given no arguments' do
+      described_class.set(:a, 1)
+      expect(described_class.merge).to eq(a: 1)
+      expect(described_class.to_h).to eq(a: 1)
+    end
+  end
+
+  describe '.replace' do
+    it 'replaces all existing keys with the given hash' do
+      described_class.set(:old_key, 'value')
+      described_class.replace(new_key: 'new_value')
+      expect(described_class.to_h).to eq(new_key: 'new_value')
+    end
+
+    it 'clears the state when given an empty hash' do
+      described_class.set(:a, 1)
+      described_class.replace({})
+      expect(described_class.empty?).to be true
+    end
+
+    it 'returns a snapshot of the new state' do
+      result = described_class.replace(x: 1, y: 2)
+      expect(result).to eq(x: 1, y: 2)
+    end
+
+    it 'is isolated per thread' do
+      described_class.set(:main, 'main-val')
+      Thread.new { described_class.replace(thread_key: 'thread-val') }.join
+      expect(described_class.to_h).to eq(main: 'main-val')
+    end
+
+    it 'duplicates the input so later mutations do not leak in' do
+      input = { a: 1 }
+      described_class.replace(input)
+      input[:a] = 999
+      expect(described_class.get(:a)).to eq(1)
+    end
+  end
+
+  describe '.slice' do
+    before do
+      described_class.set(:a, 1)
+      described_class.set(:b, 2)
+      described_class.set(:c, 3)
+    end
+
+    it 'returns a hash of only the requested keys' do
+      expect(described_class.slice(:a, :c)).to eq(a: 1, c: 3)
+    end
+
+    it 'omits keys that are not present' do
+      expect(described_class.slice(:a, :missing)).to eq(a: 1)
+    end
+
+    it 'returns an empty hash when no keys match' do
+      expect(described_class.slice(:none, :zero)).to eq({})
+    end
+
+    it 'returns an empty hash when called with no keys' do
+      expect(described_class.slice).to eq({})
+    end
+  end
+
+  describe '.each' do
+    before do
+      described_class.set(:a, 1)
+      described_class.set(:b, 2)
+    end
+
+    it 'yields every key-value pair' do
+      collected = {}
+      described_class.each { |k, v| collected[k] = v }
+      expect(collected).to eq(a: 1, b: 2)
+    end
+
+    it 'returns an Enumerator when no block is given' do
+      enum = described_class.each
+      expect(enum).to be_a(Enumerator)
+      expect(enum.to_a).to contain_exactly([:a, 1], [:b, 2])
+    end
+
+    it 'iterates over a snapshot (mutation during iteration is safe)' do
+      seen = []
+      described_class.each do |k, v|
+        described_class.set(:c, 99)
+        seen << [k, v]
+      end
+      expect(seen).to contain_exactly([:a, 1], [:b, 2])
+    end
+
+    it 'yields nothing when the bag is empty' do
+      described_class.clear
+      expect { |b| described_class.each(&b) }.not_to yield_control
+    end
+  end
 end

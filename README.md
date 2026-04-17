@@ -82,6 +82,22 @@ Philiprehberger::StateBag.to_h       # => {:a=>1}
 Philiprehberger::StateBag.clear
 ```
 
+### Bulk Operations
+
+```ruby
+Philiprehberger::StateBag.merge(user_id: 42, locale: 'en', request_id: 'req-1')
+# => {:user_id=>42, :locale=>"en", :request_id=>"req-1"}
+
+Philiprehberger::StateBag.slice(:user_id, :locale)
+# => {:user_id=>42, :locale=>"en"}
+
+Philiprehberger::StateBag.each { |k, v| puts "#{k}=#{v}" }
+
+Philiprehberger::StateBag.replace(user_id: 99)
+Philiprehberger::StateBag.to_h
+# => {:user_id=>99}
+```
+
 ## API
 
 | Method | Description |
@@ -98,6 +114,10 @@ Philiprehberger::StateBag.clear
 | `.empty?` | True if the state bag has no entries |
 | `.keys` | Array of all keys in the state bag |
 | `.values` | Array of all values in the state bag |
+| `.merge(**entries)` | Bulk-set multiple keys; returns a snapshot |
+| `.replace(hash)` | Replace the entire state with the given hash; returns a snapshot |
+| `.slice(*keys)` | Return a hash containing only the given keys |
+| `.each(&block)` | Iterate key-value pairs; returns an Enumerator without a block |
 
 ## Development
 
