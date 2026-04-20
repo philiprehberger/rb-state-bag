@@ -240,6 +240,31 @@ RSpec.describe Philiprehberger::StateBag do
     end
   end
 
+  describe '.dig' do
+    it 'digs through nested hashes' do
+      described_class.set(:user, { profile: { email: 'x@y' } })
+      expect(described_class.dig(:user, :profile, :email)).to eq('x@y')
+    end
+
+    it 'returns nil when the top-level key is missing' do
+      expect(described_class.dig(:missing, :profile, :email)).to be_nil
+    end
+
+    it 'returns nil when a mid-level key is missing' do
+      described_class.set(:user, { profile: { email: 'x@y' } })
+      expect(described_class.dig(:user, :missing, :email)).to be_nil
+    end
+
+    it 'raises TypeError when an intermediate value does not respond to dig' do
+      described_class.set(:x, 5)
+      expect { described_class.dig(:x, :y) }.to raise_error(TypeError)
+    end
+
+    it 'raises ArgumentError when called with no keys' do
+      expect { described_class.dig }.to raise_error(ArgumentError, /given 0, expected 1\+/)
+    end
+  end
+
   describe '.delete' do
     it 'removes a key and returns its value' do
       described_class.set(:temp, 'data')

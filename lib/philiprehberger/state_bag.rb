@@ -84,6 +84,23 @@ module Philiprehberger
       end
     end
 
+    # Dig into nested hash-valued entries using a sequence of keys
+    #
+    # Mirrors Ruby's Hash#dig. Looks up the first key in the thread-local
+    # store, then calls :dig on the resulting value with the remaining keys.
+    # Returns nil on any missing key. Raises ArgumentError when no keys are
+    # given, and TypeError when an intermediate value does not respond to :dig
+    # (matching Hash#dig behavior).
+    #
+    # @param keys [Array<Symbol, String>] the key path to traverse
+    # @return [Object, nil] the nested value, or nil on any miss
+    # @raise [ArgumentError] if no keys are given
+    def self.dig(*keys)
+      raise ArgumentError, 'wrong number of arguments (given 0, expected 1+)' if keys.empty?
+
+      store.dig(*keys)
+    end
+
     # Remove a key from the state bag
     #
     # @param key [Symbol, String] the key to remove
