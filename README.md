@@ -82,6 +82,14 @@ Philiprehberger::StateBag.to_h       # => {:a=>1}
 Philiprehberger::StateBag.clear
 ```
 
+### Deep access
+
+```ruby
+Philiprehberger::StateBag.set(:request, { id: "abc", user: { email: "x@y.com" } })
+Philiprehberger::StateBag.dig(:request, :user, :email) # => "x@y.com"
+Philiprehberger::StateBag.dig(:request, :missing)      # => nil
+```
+
 ### Bulk Operations
 
 ```ruby
@@ -106,6 +114,7 @@ Philiprehberger::StateBag.to_h
 | `.get(key, default = nil)` | Retrieve a value or return the default |
 | `.with(**overrides, &block)` | Execute block with temporary state, restoring after |
 | `.fetch(key, default = UNSET, &block)` | Retrieve a value; raises KeyError if missing with no default/block |
+| `.dig(*keys)` | Dig into nested hash-valued entries; returns nil on any miss |
 | `.delete(key)` | Remove a key and return its value |
 | `.clear` | Remove all entries from the state bag |
 | `.to_h` | Return a snapshot of the current state |
