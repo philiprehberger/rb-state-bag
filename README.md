@@ -106,6 +106,21 @@ Philiprehberger::StateBag.to_h
 # => {:user_id=>99}
 ```
 
+### Snapshot & Restore
+
+```ruby
+Philiprehberger::StateBag.set(:user_id, 42)
+Philiprehberger::StateBag.set(:locale, 'en')
+
+snapshot = Philiprehberger::StateBag.snapshot
+# => {:user_id=>42, :locale=>"en"} (frozen)
+
+Philiprehberger::StateBag.set(:user_id, 99)
+Philiprehberger::StateBag.restore(snapshot)
+Philiprehberger::StateBag.get(:user_id)
+# => 42
+```
+
 ## API
 
 | Method | Description |
@@ -127,6 +142,8 @@ Philiprehberger::StateBag.to_h
 | `.replace(hash)` | Replace the entire state with the given hash; returns a snapshot |
 | `.slice(*keys)` | Return a hash containing only the given keys |
 | `.each(&block)` | Iterate key-value pairs; returns an Enumerator without a block |
+| `.snapshot` | Return a frozen copy of the current state |
+| `.restore(snapshot)` | Replace the state with a copy of the given snapshot; raises ArgumentError for non-Hash |
 
 ## Development
 

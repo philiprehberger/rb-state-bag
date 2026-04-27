@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-04-26
+
+### Added
+- `StateBag.snapshot` — returns a frozen shallow copy of the current state
+- `StateBag.restore(snapshot)` — replaces the current thread-local state with a copy of the given snapshot; raises `ArgumentError` for non-Hash input
+
 ## [0.6.0] - 2026-04-19
 
 ### Added

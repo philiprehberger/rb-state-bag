@@ -182,6 +182,32 @@ module Philiprehberger
       store.dup.each_pair(&block)
     end
 
+    # Capture a frozen snapshot of the current state
+    #
+    # The returned hash is a shallow copy of the thread-local store and is
+    # frozen so callers cannot mutate it. Subsequent changes to the state bag
+    # do not affect the returned snapshot.
+    #
+    # @return [Hash] frozen copy of the current state
+    def self.snapshot
+      store.dup.freeze
+    end
+
+    # Replace the current thread-local state with a copy of the given snapshot
+    #
+    # The snapshot is duplicated before being installed so the state bag does
+    # not share references with the caller's hash.
+    #
+    # @param snapshot [Hash] the snapshot to restore
+    # @return [Hash] snapshot of the state bag after the restore
+    # @raise [ArgumentError] if snapshot is not a Hash
+    def self.restore(snapshot)
+      raise ArgumentError, "snapshot must be a Hash, got #{snapshot.class}" unless snapshot.is_a?(Hash)
+
+      store.replace(snapshot.dup)
+      store.dup
+    end
+
     class << self
       private
 

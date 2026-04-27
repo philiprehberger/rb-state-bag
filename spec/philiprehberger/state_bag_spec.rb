@@ -464,4 +464,115 @@ RSpec.describe Philiprehberger::StateBag do
       expect { |b| described_class.each(&b) }.not_to yield_control
     end
   end
+
+  describe '.snapshot' do
+    it 'returns a Hash containing the current keys' do
+      described_class.set(:a, 1)
+      described_class.set(:b, 2)
+      expect(described_class.snapshot).to eq(a: 1, b: 2)
+    end
+
+    it 'returns an empty Hash when the bag is empty' do
+      expect(described_class.snapshot).to eq({})
+    end
+
+    it 'returns a frozen Hash' do
+      described_class.set(:a, 1)
+      expect(described_class.snapshot).to be_frozen
+    end
+
+    it 'is unaffected by subsequent mutations of the store' do
+      described_class.set(:a, 1)
+      snap = described_class.snapshot
+      described_class.set(:a, 999)
+      described_class.set(:b, 'new')
+      expect(snap).to eq(a: 1)
+    end
+
+    it 'is unaffected when keys are deleted from the store' do
+      described_class.set(:a, 1)
+      snap = described_class.snapshot
+      described_class.delete(:a)
+      expect(snap).to eq(a: 1)
+    end
+
+    it 'cannot be mutated by the caller' do
+      described_class.set(:a, 1)
+      snap = described_class.snapshot
+      expect { snap[:a] = 2 }.to raise_error(FrozenError)
+    end
+  end
+
+  describe '.restore' do
+    it 'replaces the entire state with the given snapshot' do
+      described_class.set(:old, 'value')
+      described_class.restore(new: 'state')
+      expect(described_class.to_h).to eq(new: 'state')
+    end
+
+    it 'clears the state when given an empty hash' do
+      described_class.set(:a, 1)
+      described_class.restore({})
+      expect(described_class.empty?).to be true
+    end
+
+    it 'returns a snapshot of the new state' do
+      result = described_class.restore(x: 1, y: 2)
+      expect(result).to eq(x: 1, y: 2)
+    end
+
+    it 'does not share references with the input snapshot' do
+      input = { a: 1 }
+      described_class.restore(input)
+      input[:a] = 999
+      expect(described_class.get(:a)).to eq(1)
+    end
+
+    it 'accepts a frozen snapshot from .snapshot' do
+      described_class.set(:a, 1)
+      snap = described_class.snapshot
+      described_class.set(:a, 2)
+      described_class.restore(snap)
+      expect(described_class.get(:a)).to eq(1)
+    end
+
+    it 'leaves the original snapshot unchanged after subsequent mutations' do
+      described_class.set(:a, 1)
+      snap = described_class.snapshot
+      described_class.restore(snap)
+      described_class.set(:a, 99)
+      expect(snap).to eq(a: 1)
+    end
+
+    it 'raises ArgumentError when given a non-Hash' do
+      expect { described_class.restore('not a hash') }
+        .to raise_error(ArgumentError, 'snapshot must be a Hash, got String')
+    end
+
+    it 'raises ArgumentError when given nil' do
+      expect { described_class.restore(nil) }
+        .to raise_error(ArgumentError, 'snapshot must be a Hash, got NilClass')
+    end
+
+    it 'raises ArgumentError when given an Array' do
+      expect { described_class.restore([[:a, 1]]) }
+        .to raise_error(ArgumentError, 'snapshot must be a Hash, got Array')
+    end
+
+    it 'restores a snapshot taken in another thread' do
+      snap = Thread.new do
+        described_class.set(:from_thread, 'value')
+        described_class.snapshot
+      end.value
+
+      described_class.restore(snap)
+      expect(described_class.get(:from_thread)).to eq('value')
+    end
+
+    it 'is isolated per thread' do
+      described_class.set(:main, 'main-val')
+      Thread.new { described_class.restore(thread_key: 'thread-val') }.join
+      expect(described_class.to_h).to eq(main: 'main-val')
+    end
+  end
 end
