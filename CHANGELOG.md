@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-04-28
+
+### Added
+- `StateBag.update(key) { |current| ... }` — atomic read-modify-write for a single key. Yields the current value (or `nil`) and stores the block's return value. Raises `ArgumentError` when no block is given.
+
 ## [0.7.0] - 2026-04-26
 
 ### Added

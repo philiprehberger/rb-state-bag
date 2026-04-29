@@ -193,6 +193,23 @@ module Philiprehberger
       store.dup.freeze
     end
 
+    # Atomically read-modify-write a single key
+    #
+    # Yields the current value (or nil if the key is missing) and stores the
+    # block's return value back under the same key. The whole operation runs
+    # against the current thread's store, so it composes safely with `with`
+    # and other thread-local helpers.
+    #
+    # @param key [Symbol, String] the key to update
+    # @yield [current] the current value (or nil)
+    # @return [Object] the new value stored
+    # @raise [ArgumentError] if no block is given
+    def self.update(key)
+      raise ArgumentError, 'block required' unless block_given?
+
+      store[key] = yield(store[key])
+    end
+
     # Replace the current thread-local state with a copy of the given snapshot
     #
     # The snapshot is duplicated before being installed so the state bag does

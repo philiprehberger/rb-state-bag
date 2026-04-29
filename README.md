@@ -106,6 +106,20 @@ Philiprehberger::StateBag.to_h
 # => {:user_id=>99}
 ```
 
+### Update
+
+Atomically read-modify-write a single key. The block receives the current
+value (or `nil` if the key is missing) and its return value is stored back.
+
+```ruby
+Philiprehberger::StateBag.set(:counter, 0)
+Philiprehberger::StateBag.update(:counter) { |v| v + 1 }
+Philiprehberger::StateBag.get(:counter) # => 1
+
+Philiprehberger::StateBag.update(:visited) { |v| (v || []) + ['/home'] }
+Philiprehberger::StateBag.get(:visited)  # => ["/home"]
+```
+
 ### Snapshot & Restore
 
 ```ruby
@@ -142,6 +156,7 @@ Philiprehberger::StateBag.get(:user_id)
 | `.replace(hash)` | Replace the entire state with the given hash; returns a snapshot |
 | `.slice(*keys)` | Return a hash containing only the given keys |
 | `.each(&block)` | Iterate key-value pairs; returns an Enumerator without a block |
+| `.update(key, &block)` | Atomic read-modify-write; yields current value (or nil), stores block result |
 | `.snapshot` | Return a frozen copy of the current state |
 | `.restore(snapshot)` | Replace the state with a copy of the given snapshot; raises ArgumentError for non-Hash |
 

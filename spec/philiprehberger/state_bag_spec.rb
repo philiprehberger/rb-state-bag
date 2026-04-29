@@ -575,4 +575,40 @@ RSpec.describe Philiprehberger::StateBag do
       expect(described_class.to_h).to eq(main: 'main-val')
     end
   end
+
+  describe '.update' do
+    it 'yields the current value and stores the block result' do
+      described_class.set(:counter, 1)
+      result = described_class.update(:counter) { |v| v + 1 }
+      expect(result).to eq(2)
+      expect(described_class.get(:counter)).to eq(2)
+    end
+
+    it 'yields nil for a missing key' do
+      seen = :unset
+      described_class.update(:missing) do |v|
+        seen = v
+        'first'
+      end
+      expect(seen).to be_nil
+      expect(described_class.get(:missing)).to eq('first')
+    end
+
+    it 'stores nil when the block returns nil' do
+      described_class.set(:k, 'value')
+      described_class.update(:k) { nil }
+      expect(described_class.get(:k)).to be_nil
+      expect(described_class.key?(:k)).to be true
+    end
+
+    it 'raises ArgumentError without a block' do
+      expect { described_class.update(:k) }.to raise_error(ArgumentError, 'block required')
+    end
+
+    it 'is isolated per thread' do
+      described_class.set(:counter, 10)
+      Thread.new { described_class.update(:counter) { |v| (v || 0) + 100 } }.join
+      expect(described_class.get(:counter)).to eq(10)
+    end
+  end
 end
